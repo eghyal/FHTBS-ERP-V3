@@ -1,0 +1,23 @@
+rules_version = '2';
+
+// ===================================================================
+// FHTBS ERP — Firestore Security Rules (DENY BY DEFAULT)
+// ===================================================================
+// Perbaikan G-03 (audit 8 Oktober 2026):
+// Aturan wildcard `allow read, write: if true` telah DIHAPUS.
+// Seluruh akses langsung dari klien ke Cloud Firestore DITOLAK.
+//
+// Arsitektur saat ini: SQLite adalah satu-satunya sumber kebenaran.
+// Sinkronisasi Firestore dinonaktifkan di server (lihat server.ts dan
+// src/db/firebaseSync.ts). Bila suatu saat integrasi Firestore
+// diaktifkan kembali, tulis aturan spesifik per-koleksi dengan
+// verifikasi `request.auth` dan klaim peran — JANGAN membuka wildcard.
+// ===================================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
